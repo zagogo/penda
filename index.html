@@ -1,0 +1,194 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Paint App
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <style>
+   .canvas-container {
+    position: relative;
+   }
+   .canvas-container canvas {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+   }
+  </style>
+ </head>
+ <body class="bg-gray-100 font-roboto">
+  <div class="container mx-auto p-4">
+   <header class="flex justify-between items-center py-4">
+    <h1 class="text-3xl font-bold">
+     Paint App
+    </h1>
+   </header>
+   <div class="flex justify-between items-center my-4">
+    <script type="text/javascript">
+	atOptions = {
+		'key' : '583d0b05959afa95aa78b01bf5708a8b',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/583d0b05959afa95aa78b01bf5708a8b/invoke.js"></script>
+    <div class="flex-grow mx-4">
+     <div class="bg-white shadow-md rounded-lg p-4">
+      <div class="flex justify-between items-center mb-4">
+       <div class="flex space-x-2">
+        <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="brush-tool">
+         <i class="fas fa-paint-brush">
+         </i>
+        </button>
+        <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="eraser-tool">
+         <i class="fas fa-eraser">
+         </i>
+        </button>
+        <input class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="color-picker" type="color"/>
+        <input class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="pen-size" max="50" min="1" type="range" value="5"/>
+        <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="undo-tool">
+         <i class="fas fa-undo">
+         </i>
+        </button>
+        <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="redo-tool">
+         <i class="fas fa-redo">
+         </i>
+        </button>
+       </div>
+       <div class="flex space-x-2">
+        <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="save-tool">
+         <i class="fas fa-save">
+         </i>
+        </button>
+        <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="clear-tool">
+         <i class="fas fa-trash">
+         </i>
+        </button>
+       </div>
+      </div>
+      <div class="canvas-container">
+       <canvas height="400" id="paint-canvas" width="800">
+       </canvas>
+      </div>
+     </div>
+    </div>
+   <script type="text/javascript">
+	atOptions = {
+		'key' : '583d0b05959afa95aa78b01bf5708a8b',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/583d0b05959afa95aa78b01bf5708a8b/invoke.js"></script>
+   </div>
+  </div>
+  <script>
+   const canvas = document.getElementById('paint-canvas');
+const ctx = canvas.getContext('2d');
+let painting = false;
+let penColor = '#000000';
+let penSize = 5;
+let history = [];
+let historyStep = -1;
+
+function startPosition(e) {
+  painting = true;
+  draw(e);
+}
+
+function endPosition() {
+  painting = false;
+  ctx.beginPath();
+  if (historyStep < history.length - 1) {
+    history = history.slice(0, historyStep + 1);
+  }
+  history.push(canvas.toDataURL());
+  historyStep++;
+}
+
+function draw(e) {
+  if (!painting) return;
+  ctx.lineWidth = penSize;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = penColor;
+
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX || e.touches[0].clientX) - rect.left;
+  const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+  ctx.lineTo(x, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+}
+
+canvas.addEventListener('mousedown', startPosition);
+canvas.addEventListener('mouseup', endPosition);
+canvas.addEventListener('mousemove', draw);
+
+canvas.addEventListener('touchstart', startPosition);
+canvas.addEventListener('touchend', endPosition);
+canvas.addEventListener('touchmove', draw);
+
+document.getElementById('color-picker').addEventListener('change', (e) => {
+  penColor = e.target.value;
+});
+
+document.getElementById('pen-size').addEventListener('change', (e) => {
+  penSize = e.target.value;
+});
+
+document.getElementById('brush-tool').addEventListener('click', () => {
+  penColor = document.getElementById('color-picker').value;
+});
+
+document.getElementById('eraser-tool').addEventListener('click', () => {
+  penColor = '#FFFFFF';
+});
+
+document.getElementById('undo-tool').addEventListener('click', () => {
+  if (historyStep > 0) {
+    historyStep--;
+    let canvasPic = new Image();
+    canvasPic.src = history[historyStep];
+    canvasPic.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(canvasPic, 0, 0);
+    };
+  }
+});
+
+document.getElementById('redo-tool').addEventListener('click', () => {
+  if (historyStep < history.length - 1) {
+    historyStep++;
+    let canvasPic = new Image();
+    canvasPic.src = history[historyStep];
+    canvasPic.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(canvasPic, 0, 0);
+    };
+  }
+});
+
+document.getElementById('save-tool').addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'painting.png';
+  link.href = canvas.toDataURL();
+  link.click();
+});
+
+document.getElementById('clear-tool').addEventListener('click', () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  history = [];
+  historyStep = -1;
+});
+  </script>
+ </body>
+</html>
