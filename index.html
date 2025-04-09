@@ -134,15 +134,6 @@
       <div class="canvas-container">
        <canvas height="400" id="paint-canvas" width="800"></canvas>
       </div>
-      <div class="mt-4 text-sm text-blue-300">
-        🎨 Fun Fact: Did you know the world's first painting dates back over 45,000 years? Also, drawing helps improve memory and concentration!
-      </div>
-      <div class="mt-2 text-sm text-blue-300">
-        ✨ Bonus: People who doodle are more likely to retain information while listening!
-      </div>
-      <div class="mt-2 text-sm text-blue-300">
-        🧠 Creative Fact: Drawing regularly enhances brain connectivity, making it great for mental health!
-      </div>
      </div>
     </div>
     <script type="text/javascript">
@@ -242,6 +233,7 @@
     function endPosition() {
       painting = false;
       ctx.beginPath();
+      saveState();
     }
 
     // Event Listeners for drawing
@@ -249,6 +241,52 @@
     canvas.addEventListener('mouseup', endPosition);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseout', endPosition);
+
+    // Save the current state of the canvas
+    function saveState() {
+      if (historyStep < history.length - 1) {
+        history = history.slice(0, historyStep + 1);
+      }
+      history.push(canvas.toDataURL());
+      historyStep++;
+    }
+
+    // Undo functionality
+    document.getElementById('undo-tool').addEventListener('click', () => {
+      if (historyStep > 0) {
+        historyStep--;
+        let img = new Image();
+        img.src = history[historyStep];
+        img.onload = () => ctx.drawImage(img, 0, 0);
+      }
+    });
+
+    // Redo functionality
+    document.getElementById('redo-tool').addEventListener('click', () => {
+      if (historyStep < history.length - 1) {
+        historyStep++;
+        let img = new Image();
+        img.src = history[historyStep];
+        img.onload = () => ctx.drawImage(img, 0, 0);
+      }
+    });
+
+    // Save canvas as image
+    document.getElementById('save-tool').addEventListener('click', () => {
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 'canvas-image.png';
+      link.click();
+    });
+
+    // Clear canvas
+    document.getElementById('clear-tool').addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      saveState();
+    });
 
     // Toggle Neon Effect
     document.getElementById('neon-toggle').addEventListener('click', () => {
