@@ -1,180 +1,177 @@
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Penda</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
-  <style>
-   .canvas-container {
-    position: relative;
-   }
-   .canvas-container canvas {
-    border: 2px solid #00e1ff;
-    border-radius: 12px;
-    background-color: white;
-   }
-   .glow {
-    text-shadow: 0 0 5px #00e1ff, 0 0 10px #00e1ff;
-    color: #ffffff;
-   }
-   .feature-label {
-    font-size: 0.75rem;
-    text-align: center;
-    margin-top: 0.25rem;
-    color: #00e1ff;
-   }
-   .tooltip {
-     position: absolute;
-     background-color: rgba(0, 0, 0, 0.7);
-     color: #fff;
-     padding: 2px 6px;
-     border-radius: 4px;
-     font-size: 12px;
-     pointer-events: none;
-     display: none;
-     z-index: 9999;
-   }
-   .clock {
-    font-size: 0.85rem;
-    color: #00e1ff;
-    margin-left: auto;
-   }
-  </style>
- </head>
- <body class="bg-gray-900 font-roboto text-white">
-  <div class="tooltip" id="tooltip"></div>
-  <div class="container mx-auto p-4">
-   <header class="flex justify-between items-center py-4">
-    <h1 class="text-4xl font-bold glow">Penda</h1>
-    <div id="clock" class="clock"></div>
-   </header>
-   <div class="flex justify-between items-center my-4">
-    <!-- Ad script untouched -->
-    <script type="text/javascript">
-      atOptions = {
-        'key': '583d0b05959afa95aa78b01bf5708a8b',
-        'format': 'iframe',
-        'height': 60,
-        'width': 468,
-        'params': {}
-      };
-    </script>
-    <script type="text/javascript" src="//www.highperformanceformat.com/583d0b05959afa95aa78b01bf5708a8b/invoke.js"></script>
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Penda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet" />
+    <style>
+      .canvas-container {
+        position: relative;
+      }
+      .canvas-container canvas {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
 
-    <div class="flex-grow mx-4">
-     <div class="bg-gray-800 shadow-lg rounded-lg p-4">
-      <div class="flex justify-between items-center mb-4">
-       <div class="flex space-x-2 relative">
-        <div class="text-center">
-         <button class="p-2 bg-gray-200 text-black rounded hover:bg-gray-300" id="brush-tool">
-          <i class="fas fa-paint-brush"></i>
-         </button>
-         <div class="feature-label">Brush</div>
+  <body class="bg-gray-100 font-roboto">
+    <div class="container mx-auto p-4">
+      <header class="flex justify-between items-center py-4">
+        <h1 class="text-3xl font-bold">
+          Penda
+        </h1>
+      </header>
+      <div class="flex justify-between items-center my-4">
+        <div class="flex-grow mx-4">
+          <div class="bg-white shadow-md rounded-lg p-4">
+            <div class="flex justify-between items-center mb-4">
+              <div class="flex space-x-2">
+                <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="brush-tool">
+                  <i class="fas fa-paint-brush"></i>
+                </button>
+                <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="eraser-tool">
+                  <i class="fas fa-eraser"></i>
+                </button>
+                <input class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="color-picker" type="color" />
+                <input class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="pen-size" max="50" min="1" type="range" value="5" />
+                <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="undo-tool">
+                  <i class="fas fa-undo"></i>
+                </button>
+                <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="redo-tool">
+                  <i class="fas fa-redo"></i>
+                </button>
+              </div>
+              <div class="flex space-x-2">
+                <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="save-tool">
+                  <i class="fas fa-save"></i>
+                </button>
+                <button class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="clear-tool">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="canvas-container">
+              <canvas height="400" id="paint-canvas" width="800"></canvas>
+            </div>
+          </div>
         </div>
-        <div class="text-center">
-         <button class="p-2 bg-gray-200 text-black rounded hover:bg-gray-300" id="eraser-tool">
-          <i class="fas fa-eraser"></i>
-         </button>
-         <div class="feature-label">Eraser</div>
-        </div>
-        <div class="text-center">
-         <input class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="color-picker" type="color"/>
-         <div class="feature-label">Color</div>
-        </div>
-        <div class="text-center">
-         <input class="p-2 bg-gray-200 rounded hover:bg-gray-300" id="pen-size" max="50" min="1" type="range" value="5"/>
-         <div class="feature-label">Size</div>
-        </div>
-        <div class="text-center">
-         <button class="p-2 bg-gray-200 text-black rounded hover:bg-gray-300" id="undo-tool">
-          <i class="fas fa-undo"></i>
-         </button>
-         <div class="feature-label">Undo</div>
-        </div>
-        <div class="text-center">
-         <button class="p-2 bg-gray-200 text-black rounded hover:bg-gray-300" id="redo-tool">
-          <i class="fas fa-redo"></i>
-         </button>
-         <div class="feature-label">Redo</div>
-        </div>
-        <div class="text-center">
-         <button class="p-2 bg-gray-200 text-black rounded hover:bg-gray-300" id="neon-toggle">
-          <i class="fas fa-lightbulb"></i>
-         </button>
-         <div class="feature-label">Neon</div>
-        </div>
-        <div class="text-center">
-         <button class="p-2 bg-gray-200 text-black rounded hover:bg-gray-300" id="symmetry-toggle">
-          <i class="fas fa-columns"></i>
-         </button>
-         <div class="feature-label">Symmetry</div>
-        </div>
-        <div class="text-center">
-         <button class="p-2 bg-gray-200 text-black rounded hover:bg-gray-300" id="grid-toggle">
-          <i class="fas fa-border-all"></i>
-         </button>
-         <div class="feature-label">Grid</div>
-        </div>
-       </div>
-       <div class="flex space-x-2">
-        <button class="p-2 bg-gray-200 text-black rounded hover:bg-gray-300" id="save-tool">
-         <i class="fas fa-save"></i>
-        </button>
-        <button class="p-2 bg-gray-200 text-black rounded hover:bg-gray-300" id="clear-tool">
-         <i class="fas fa-trash"></i>
-        </button>
-       </div>
       </div>
-      <div class="canvas-container">
-       <canvas height="400" id="paint-canvas" width="800"></canvas>
-      </div>
-      <div class="mt-4 text-sm text-blue-300">
-        🎨 Fun Fact: Did you know the world's first painting dates back over 45,000 years? Also, drawing helps improve memory and concentration!
-      </div>
-      <div class="mt-2 text-sm text-blue-300">
-        ✨ Bonus: People who doodle are more likely to retain information while listening!
-      </div>
-      <div class="mt-2 text-sm text-blue-300">
-        🧠 Creative Fact: Drawing regularly enhances brain connectivity, making it great for mental health!
-      </div>
-     </div>
     </div>
-    <script type="text/javascript">
-      atOptions = {
-        'key': '583d0b05959afa95aa78b01bf5708a8b',
-        'format': 'iframe',
-        'height': 60,
-        'width': 468,
-        'params': {}
-      };
+
+    <script>
+      const canvas = document.getElementById('paint-canvas');
+      const ctx = canvas.getContext('2d');
+      let painting = false;
+      let penColor = '#000000';
+      let penSize = 5;
+      let history = [];
+      let historyStep = -1;
+
+      // Start drawing
+      function startPosition(e) {
+        painting = true;
+        draw(e);
+      }
+
+      // Stop drawing
+      function endPosition() {
+        painting = false;
+        ctx.beginPath();
+        if (historyStep < history.length - 1) {
+          history = history.slice(0, historyStep + 1);
+        }
+        history.push(canvas.toDataURL());
+        historyStep++;
+      }
+
+      // Draw on canvas
+      function draw(e) {
+        if (!painting) return;
+        ctx.lineWidth = penSize;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = penColor;
+
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+      }
+
+      // Event listeners
+      canvas.addEventListener('mousedown', startPosition);
+      canvas.addEventListener('mouseup', endPosition);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('touchstart', startPosition);
+      canvas.addEventListener('touchend', endPosition);
+      canvas.addEventListener('touchmove', draw);
+
+      // Change pen color
+      document.getElementById('color-picker').addEventListener('change', (e) => {
+        penColor = e.target.value;
+      });
+
+      // Change pen size
+      document.getElementById('pen-size').addEventListener('change', (e) => {
+        penSize = e.target.value;
+      });
+
+      // Brush tool click
+      document.getElementById('brush-tool').addEventListener('click', () => {
+        penColor = document.getElementById('color-picker').value;
+      });
+
+      // Eraser tool click
+      document.getElementById('eraser-tool').addEventListener('click', () => {
+        penColor = '#FFFFFF'; // Eraser color
+      });
+
+      // Undo tool
+      document.getElementById('undo-tool').addEventListener('click', () => {
+        if (historyStep > 0) {
+          historyStep--;
+          let canvasPic = new Image();
+          canvasPic.src = history[historyStep];
+          canvasPic.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(canvasPic, 0, 0);
+          };
+        }
+      });
+
+      // Redo tool
+      document.getElementById('redo-tool').addEventListener('click', () => {
+        if (historyStep < history.length - 1) {
+          historyStep++;
+          let canvasPic = new Image();
+          canvasPic.src = history[historyStep];
+          canvasPic.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(canvasPic, 0, 0);
+          };
+        }
+      });
+
+      // Save tool
+      document.getElementById('save-tool').addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = 'painting.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+
+      // Clear tool
+      document.getElementById('clear-tool').addEventListener('click', () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        history = [];
+        historyStep = -1;
+      });
     </script>
-    <script type="text/javascript" src="//www.highperformanceformat.com/583d0b05959afa95aa78b01bf5708a8b/invoke.js"></script>
-   </div>
-  </div>
-  <script>
-    const clock = document.getElementById('clock');
-    function updateClock() {
-      const now = new Date();
-      clock.innerText = now.toLocaleTimeString();
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    const tooltip = document.getElementById('tooltip');
-    document.querySelectorAll('button, input').forEach(el => {
-      el.addEventListener('mouseenter', (e) => {
-        tooltip.style.left = e.pageX + 'px';
-        tooltip.style.top = e.pageY - 30 + 'px';
-        tooltip.innerText = el.id.replace('-', ' ');
-        tooltip.style.display = 'block';
-      });
-      el.addEventListener('mouseleave', () => {
-        tooltip.style.display = 'none';
-      });
-    });
-  </script>
- </body>
+  </body>
 </html>
-
