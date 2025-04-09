@@ -8,87 +8,92 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
    .canvas-container {
-    position: relative;
+     position: relative;
    }
    .canvas-container canvas {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 225, 255, 0.3);
+     border: 3px solid #00e1ff;
+     border-radius: 12px;
+     background-color: white;
+     box-shadow: 0 0 20px rgba(0, 225, 255, 0.4);
    }
    body {
-    background: linear-gradient(145deg, #1e1e2f, #12121c);
-    color: white;
+     background: linear-gradient(135deg, #1f1c2c, #928dab);
+     font-family: 'Roboto', sans-serif;
+     color: #fff;
    }
-   h1 {
-    text-shadow: 0 0 10px #00e1ff;
+   .tool-button {
+     background-color: #2d2a40;
+     color: #00e1ff;
+     transition: all 0.2s ease-in-out;
+     box-shadow: 0 0 8px #00e1ff88;
    }
-   button:hover, input[type=color]:hover, input[type=range]:hover {
-    box-shadow: 0 0 10px #00e1ff;
+   .tool-button:hover {
+     background-color: #3d3a60;
+     box-shadow: 0 0 12px #00e1ffcc;
+   }
+   input[type="color"], input[type="range"] {
+     cursor: pointer;
+     border: 2px solid #00e1ff;
+     border-radius: 6px;
+     box-shadow: 0 0 6px #00e1ff88;
    }
   </style>
  </head>
- <body class="font-roboto">
+ <body class="bg-gray-900 font-roboto">
   <div class="container mx-auto p-4">
    <header class="flex justify-between items-center py-4">
-    <h1 class="text-4xl font-bold text-white">Paint App</h1>
+    <h1 class="text-4xl font-bold text-[#00e1ff] drop-shadow-lg">Penda</h1>
    </header>
+
    <div class="flex justify-between items-center my-4">
-    <!-- ad script -->
+    <!-- Ad Script - Leave untouched -->
     <script type="text/javascript">
-	atOptions = {
-		'key' : '583d0b05959afa95aa78b01bf5708a8b',
-		'format' : 'iframe',
-		'height' : 60,
-		'width' : 468,
-		'params' : {}
-	};
+      atOptions = {
+        'key' : '583d0b05959afa95aa78b01bf5708a8b',
+        'format' : 'iframe',
+        'height' : 60,
+        'width' : 468,
+        'params' : {}
+      };
     </script>
     <script type="text/javascript" src="//www.highperformanceformat.com/583d0b05959afa95aa78b01bf5708a8b/invoke.js"></script>
+
     <div class="flex-grow mx-4">
-     <div class="bg-gray-900 shadow-2xl rounded-lg p-4">
+     <div class="bg-[#1e1a2b] shadow-xl rounded-lg p-4 border border-[#00e1ff50]">
       <div class="flex justify-between items-center mb-4">
        <div class="flex space-x-2">
-        <button class="p-2 bg-gray-800 text-white rounded hover:bg-gray-700" id="brush-tool">
-         <i class="fas fa-paint-brush"></i>
-        </button>
-        <button class="p-2 bg-gray-800 text-white rounded hover:bg-gray-700" id="eraser-tool">
-         <i class="fas fa-eraser"></i>
-        </button>
-        <input class="p-2 rounded" id="color-picker" type="color"/>
+        <button class="p-2 tool-button rounded" id="brush-tool"><i class="fas fa-paint-brush"></i></button>
+        <button class="p-2 tool-button rounded" id="eraser-tool"><i class="fas fa-eraser"></i></button>
+        <input class="p-2" id="color-picker" type="color"/>
         <input class="p-2" id="pen-size" max="50" min="1" type="range" value="5"/>
-        <button class="p-2 bg-gray-800 text-white rounded hover:bg-gray-700" id="undo-tool">
-         <i class="fas fa-undo"></i>
-        </button>
-        <button class="p-2 bg-gray-800 text-white rounded hover:bg-gray-700" id="redo-tool">
-         <i class="fas fa-redo"></i>
-        </button>
+        <button class="p-2 tool-button rounded" id="undo-tool"><i class="fas fa-undo"></i></button>
+        <button class="p-2 tool-button rounded" id="redo-tool"><i class="fas fa-redo"></i></button>
        </div>
        <div class="flex space-x-2">
-        <button class="p-2 bg-green-700 text-white rounded hover:bg-green-600" id="save-tool">
-         <i class="fas fa-save"></i>
-        </button>
-        <button class="p-2 bg-red-700 text-white rounded hover:bg-red-600" id="clear-tool">
-         <i class="fas fa-trash"></i>
-        </button>
+        <button class="p-2 tool-button rounded" id="save-tool"><i class="fas fa-save"></i></button>
+        <button class="p-2 tool-button rounded" id="clear-tool"><i class="fas fa-trash"></i></button>
        </div>
       </div>
       <div class="canvas-container">
-       <canvas height="400" id="paint-canvas" width="800"></canvas>
+       <canvas id="paint-canvas" width="800" height="400"></canvas>
       </div>
      </div>
     </div>
+
+    <!-- Ad Script - Leave untouched -->
     <script type="text/javascript">
-	atOptions = {
-		'key' : '583d0b05959afa95aa78b01bf5708a8b',
-		'format' : 'iframe',
-		'height' : 60,
-		'width' : 468,
-		'params' : {}
-	};
+      atOptions = {
+        'key' : '583d0b05959afa95aa78b01bf5708a8b',
+        'format' : 'iframe',
+        'height' : 60,
+        'width' : 468,
+        'params' : {}
+      };
     </script>
     <script type="text/javascript" src="//www.highperformanceformat.com/583d0b05959afa95aa78b01bf5708a8b/invoke.js"></script>
    </div>
   </div>
+
   <script>
    const canvas = document.getElementById('paint-canvas');
    const ctx = canvas.getContext('2d');
