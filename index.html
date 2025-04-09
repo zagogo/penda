@@ -1,199 +1,254 @@
+<!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Penda</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-   .canvas-container {
-     position: relative;
-   }
-   .canvas-container canvas {
-     border: 3px solid #00e1ff;
-     border-radius: 12px;
-     background-color: white;
-     box-shadow: 0 0 20px rgba(0, 225, 255, 0.4);
-   }
-   body {
-     background: linear-gradient(135deg, #1f1c2c, #928dab);
-     font-family: 'Roboto', sans-serif;
-     color: #fff;
-   }
-   .tool-button {
-     background-color: #2d2a40;
-     color: #00e1ff;
-     transition: all 0.2s ease-in-out;
-     box-shadow: 0 0 8px #00e1ff88;
-   }
-   .tool-button:hover {
-     background-color: #3d3a60;
-     box-shadow: 0 0 12px #00e1ffcc;
-   }
-   input[type="color"], input[type="range"] {
-     cursor: pointer;
-     border: 2px solid #00e1ff;
-     border-radius: 6px;
-     box-shadow: 0 0 6px #00e1ff88;
-   }
+    body {
+      background: linear-gradient(120deg, #1f1f1f, #2c2c2c);
+      color: white;
+    }
+
+    .canvas-container {
+      position: relative;
+    }
+
+    .canvas-container canvas {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+    }
+
+    .glow {
+      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+    }
+
+    .neon-button {
+      border: 1px solid #0ff;
+      background: transparent;
+      color: #0ff;
+      text-shadow: 0 0 3px #0ff;
+      transition: all 0.3s;
+    }
+
+    .neon-button:hover {
+      background: #0ff;
+      color: #000;
+    }
   </style>
- </head>
- <body class="bg-gray-900 font-roboto">
+</head>
+
+<body class="bg-gray-900 font-roboto">
   <div class="container mx-auto p-4">
-   <header class="flex justify-between items-center py-4">
-    <h1 class="text-4xl font-bold text-[#00e1ff] drop-shadow-lg">Penda</h1>
-   </header>
-
-   <div class="flex justify-between items-center my-4">
-    <!-- Ad Script - Leave untouched -->
-    <script type="text/javascript">
-      atOptions = {
-        'key' : '583d0b05959afa95aa78b01bf5708a8b',
-        'format' : 'iframe',
-        'height' : 60,
-        'width' : 468,
-        'params' : {}
-      };
-    </script>
-    <script type="text/javascript" src="//www.highperformanceformat.com/583d0b05959afa95aa78b01bf5708a8b/invoke.js"></script>
-
-    <div class="flex-grow mx-4">
-     <div class="bg-[#1e1a2b] shadow-xl rounded-lg p-4 border border-[#00e1ff50]">
-      <div class="flex justify-between items-center mb-4">
-       <div class="flex space-x-2">
-        <button class="p-2 tool-button rounded" id="brush-tool"><i class="fas fa-paint-brush"></i></button>
-        <button class="p-2 tool-button rounded" id="eraser-tool"><i class="fas fa-eraser"></i></button>
-        <input class="p-2" id="color-picker" type="color"/>
-        <input class="p-2" id="pen-size" max="50" min="1" type="range" value="5"/>
-        <button class="p-2 tool-button rounded" id="undo-tool"><i class="fas fa-undo"></i></button>
-        <button class="p-2 tool-button rounded" id="redo-tool"><i class="fas fa-redo"></i></button>
-       </div>
-       <div class="flex space-x-2">
-        <button class="p-2 tool-button rounded" id="save-tool"><i class="fas fa-save"></i></button>
-        <button class="p-2 tool-button rounded" id="clear-tool"><i class="fas fa-trash"></i></button>
-       </div>
+    <header class="flex justify-between items-center py-4">
+      <h1 class="text-3xl font-bold glow">Penda</h1>
+      <div>
+        <button id="theme-toggle" class="neon-button px-3 py-1 rounded">Toggle Mode</button>
+        <span id="clock" class="ml-4"></span>
       </div>
-      <div class="canvas-container">
-       <canvas id="paint-canvas" width="800" height="400"></canvas>
+    </header>
+
+    <div class="flex justify-between items-center my-4">
+      <!-- Ad script (do not touch) -->
+      <script type="text/javascript">
+        atOptions = {
+          'key': '583d0b05959afa95aa78b01bf5708a8b',
+          'format': 'iframe',
+          'height': 60,
+          'width': 468,
+          'params': {}
+        };
+      </script>
+      <script type="text/javascript" src="//www.highperformanceformat.com/583d0b05959afa95aa78b01bf5708a8b/invoke.js"></script>
+
+      <div class="flex-grow mx-4">
+        <div class="bg-gray-800 shadow-lg rounded-lg p-4">
+          <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+            <div class="flex space-x-2">
+              <button class="p-2 bg-gray-700 rounded hover:bg-gray-600" id="brush-tool"><i class="fas fa-paint-brush"></i></button>
+              <button class="p-2 bg-gray-700 rounded hover:bg-gray-600" id="eraser-tool"><i class="fas fa-eraser"></i></button>
+              <input class="p-2 bg-gray-700 rounded" id="color-picker" type="color" />
+              <input class="p-2" id="pen-size" min="1" max="50" type="range" value="5" />
+              <button class="p-2 bg-gray-700 rounded hover:bg-gray-600" id="undo-tool"><i class="fas fa-undo"></i></button>
+              <button class="p-2 bg-gray-700 rounded hover:bg-gray-600" id="redo-tool"><i class="fas fa-redo"></i></button>
+              <button class="p-2 bg-gray-700 rounded hover:bg-gray-600" id="symmetry-tool" title="Symmetry Mode">🌀</button>
+              <button class="p-2 bg-gray-700 rounded hover:bg-gray-600" id="neon-tool" title="Neon Brush">💡</button>
+            </div>
+            <div class="flex space-x-2">
+              <button class="p-2 bg-gray-700 rounded hover:bg-gray-600" id="save-tool"><i class="fas fa-save"></i></button>
+              <button class="p-2 bg-gray-700 rounded hover:bg-gray-600" id="clear-tool"><i class="fas fa-trash"></i></button>
+              <button class="p-2 bg-gray-700 rounded hover:bg-gray-600" id="grid-toggle">📐 Grid</button>
+            </div>
+          </div>
+
+          <div class="canvas-container">
+            <canvas id="paint-canvas" width="800" height="400"></canvas>
+          </div>
+
+          <div class="mt-4 text-sm text-gray-400 italic" id="drawing-prompt">Prompt: Draw a robot eating spaghetti!</div>
+        </div>
       </div>
-     </div>
+
+      <!-- Another ad (unchanged) -->
+      <script type="text/javascript">
+        atOptions = {
+          'key': '583d0b05959afa95aa78b01bf5708a8b',
+          'format': 'iframe',
+          'height': 60,
+          'width': 468,
+          'params': {}
+        };
+      </script>
+      <script type="text/javascript" src="//www.highperformanceformat.com/583d0b05959afa95aa78b01bf5708a8b/invoke.js"></script>
     </div>
 
-    <!-- Ad Script - Leave untouched -->
-    <script type="text/javascript">
-      atOptions = {
-        'key' : '583d0b05959afa95aa78b01bf5708a8b',
-        'format' : 'iframe',
-        'height' : 60,
-        'width' : 468,
-        'params' : {}
-      };
-    </script>
-    <script type="text/javascript" src="//www.highperformanceformat.com/583d0b05959afa95aa78b01bf5708a8b/invoke.js"></script>
-   </div>
+    <!-- Placeholder for Art of the Day -->
+    <div class="bg-gray-800 rounded p-4 mt-6">
+      <h2 class="text-xl mb-2 glow">🎨 Featured Artwork of the Day</h2>
+      <p class="text-sm text-gray-400">This could be your masterpiece. Submit soon!</p>
+    </div>
+
+    <!-- Fun fact carousel -->
+    <div class="bg-gray-800 mt-6 p-4 rounded">
+      <h3 class="text-lg glow">🧠 Fun Drawing Fact</h3>
+      <p id="fun-fact" class="text-gray-300 mt-2"></p>
+    </div>
   </div>
 
   <script>
-   const canvas = document.getElementById('paint-canvas');
-   const ctx = canvas.getContext('2d');
-   let painting = false;
-   let penColor = '#000000';
-   let penSize = 5;
-   let history = [];
-   let historyStep = -1;
+    const canvas = document.getElementById('paint-canvas');
+    const ctx = canvas.getContext('2d');
+    let painting = false, symmetry = false, neon = false;
+    let penColor = '#000000';
+    let penSize = 5;
+    let history = [];
+    let historyStep = -1;
 
-   function startPosition(e) {
-     painting = true;
-     draw(e);
-   }
+    function startPosition(e) {
+      painting = true;
+      draw(e);
+    }
 
-   function endPosition() {
-     painting = false;
-     ctx.beginPath();
-     if (historyStep < history.length - 1) {
-       history = history.slice(0, historyStep + 1);
-     }
-     history.push(canvas.toDataURL());
-     historyStep++;
-   }
+    function endPosition() {
+      painting = false;
+      ctx.beginPath();
+      if (historyStep < history.length - 1) history = history.slice(0, historyStep + 1);
+      history.push(canvas.toDataURL());
+      historyStep++;
+    }
 
-   function draw(e) {
-     if (!painting) return;
-     ctx.lineWidth = penSize;
-     ctx.lineCap = 'round';
-     ctx.strokeStyle = penColor;
+    function draw(e) {
+      if (!painting) return;
+      ctx.lineWidth = penSize;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = penColor;
 
-     const rect = canvas.getBoundingClientRect();
-     const x = (e.clientX || e.touches[0].clientX) - rect.left;
-     const y = (e.clientY || e.touches[0].clientY) - rect.top;
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX || e.touches[0].clientX) - rect.left;
+      const y = (e.clientY || e.touches[0].clientY) - rect.top;
 
-     ctx.lineTo(x, y);
-     ctx.stroke();
-     ctx.beginPath();
-     ctx.moveTo(x, y);
-   }
+      if (neon) {
+        ctx.shadowColor = penColor;
+        ctx.shadowBlur = 15;
+      } else {
+        ctx.shadowBlur = 0;
+      }
 
-   canvas.addEventListener('mousedown', startPosition);
-   canvas.addEventListener('mouseup', endPosition);
-   canvas.addEventListener('mousemove', draw);
+      ctx.lineTo(x, y);
+      ctx.stroke();
 
-   canvas.addEventListener('touchstart', startPosition);
-   canvas.addEventListener('touchend', endPosition);
-   canvas.addEventListener('touchmove', draw);
+      if (symmetry) {
+        const symX = canvas.width - x;
+        ctx.beginPath();
+        ctx.moveTo(symX, y);
+        ctx.lineTo(symX, y);
+        ctx.stroke();
+      }
 
-   document.getElementById('color-picker').addEventListener('change', (e) => {
-     penColor = e.target.value;
-   });
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
 
-   document.getElementById('pen-size').addEventListener('change', (e) => {
-     penSize = e.target.value;
-   });
+    canvas.addEventListener('mousedown', startPosition);
+    canvas.addEventListener('mouseup', endPosition);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('touchstart', startPosition);
+    canvas.addEventListener('touchend', endPosition);
+    canvas.addEventListener('touchmove', draw);
 
-   document.getElementById('brush-tool').addEventListener('click', () => {
-     penColor = document.getElementById('color-picker').value;
-   });
+    document.getElementById('color-picker').addEventListener('change', e => penColor = e.target.value);
+    document.getElementById('pen-size').addEventListener('change', e => penSize = e.target.value);
+    document.getElementById('brush-tool').addEventListener('click', () => penColor = document.getElementById('color-picker').value);
+    document.getElementById('eraser-tool').addEventListener('click', () => penColor = '#ffffff');
+    document.getElementById('undo-tool').addEventListener('click', () => {
+      if (historyStep > 0) {
+        historyStep--;
+        let img = new Image();
+        img.src = history[historyStep];
+        img.onload = () => ctx.drawImage(img, 0, 0);
+      }
+    });
+    document.getElementById('redo-tool').addEventListener('click', () => {
+      if (historyStep < history.length - 1) {
+        historyStep++;
+        let img = new Image();
+        img.src = history[historyStep];
+        img.onload = () => ctx.drawImage(img, 0, 0);
+      }
+    });
+    document.getElementById('save-tool').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'painting.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+    document.getElementById('clear-tool').addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
+    document.getElementById('symmetry-tool').addEventListener('click', () => symmetry = !symmetry);
+    document.getElementById('neon-tool').addEventListener('click', () => neon = !neon);
+    document.getElementById('grid-toggle').addEventListener('click', () => {
+      canvas.style.backgroundImage = canvas.style.backgroundImage ? '' : 'linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px)';
+      canvas.style.backgroundSize = '20px 20px';
+    });
 
-   document.getElementById('eraser-tool').addEventListener('click', () => {
-     penColor = '#FFFFFF';
-   });
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('bg-gray-100');
+      document.body.classList.toggle('bg-gray-900');
+    });
 
-   document.getElementById('undo-tool').addEventListener('click', () => {
-     if (historyStep > 0) {
-       historyStep--;
-       let canvasPic = new Image();
-       canvasPic.src = history[historyStep];
-       canvasPic.onload = () => {
-         ctx.clearRect(0, 0, canvas.width, canvas.height);
-         ctx.drawImage(canvasPic, 0, 0);
-       };
-     }
-   });
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-   document.getElementById('redo-tool').addEventListener('click', () => {
-     if (historyStep < history.length - 1) {
-       historyStep++;
-       let canvasPic = new Image();
-       canvasPic.src = history[historyStep];
-       canvasPic.onload = () => {
-         ctx.clearRect(0, 0, canvas.width, canvas.height);
-         ctx.drawImage(canvasPic, 0, 0);
-       };
-     }
-   });
+    // Drawing prompts
+    const prompts = [
+      'Draw a robot eating spaghetti!',
+      'Sketch your dream treehouse.',
+      'Design a new kind of flying animal.',
+      'Illustrate what happiness looks like.',
+      'Draw with only circles!'
+    ];
+    document.getElementById('drawing-prompt').textContent = 'Prompt: ' + prompts[Math.floor(Math.random() * prompts.length)];
 
-   document.getElementById('save-tool').addEventListener('click', () => {
-     const link = document.createElement('a');
-     link.download = 'painting.png';
-     link.href = canvas.toDataURL();
-     link.click();
-   });
-
-   document.getElementById('clear-tool').addEventListener('click', () => {
-     ctx.clearRect(0, 0, canvas.width, canvas.height);
-     history = [];
-     historyStep = -1;
-   });
+    // Fun facts
+    const facts = [
+      'Leonardo da Vinci spent 12 years painting Mona Lisa’s lips.',
+      'Doodling improves focus and memory.',
+      'Drawing activates the same brain areas as meditation.',
+      'Kids who draw regularly perform better in math.',
+      'The world’s oldest known drawing is 73,000 years old!'
+    ];
+    document.getElementById('fun-fact').textContent = facts[Math.floor(Math.random() * facts.length)];
   </script>
- </body>
+</body>
+
 </html>
+
