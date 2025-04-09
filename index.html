@@ -41,6 +41,10 @@
     color: #00e1ff;
     margin-left: auto;
    }
+   .grid {
+     stroke: rgba(0, 0, 0, 0.2);
+     stroke-width: 1;
+   }
   </style>
  </head>
  <body class="bg-gray-900 font-roboto text-white">
@@ -155,7 +159,6 @@
   </div>
 
   <script>
-    // Clock functionality
     const clock = document.getElementById('clock');
     function updateClock() {
       const now = new Date();
@@ -164,7 +167,6 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Tooltip functionality
     const tooltip = document.getElementById('tooltip');
     document.querySelectorAll('button, input').forEach(el => {
       el.addEventListener('mouseenter', (e) => {
@@ -178,7 +180,6 @@
       });
     });
 
-    // Painting functionality
     const canvas = document.getElementById('paint-canvas');
     const ctx = canvas.getContext('2d');
     let painting = false;
@@ -193,8 +194,47 @@
     history.push(canvas.toDataURL());
     historyStep++;
 
-    function startPosition(e) {
+    // Feature Flags
+    let neonEnabled = false;
+    let symmetryEnabled = false;
+    let gridEnabled = false;
+
+    // Draw Functions
+    function draw(e) {
+      if (!painting) return;
       e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Apply neon effect
+      if (neonEnabled) {
+        ctx.shadowColor = penColor;
+        ctx.shadowBlur = 20;
+      } else {
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+      }
+
+      // Apply symmetry
+      if (symmetryEnabled) {
+        const xSym = canvas.width - x;
+        ctx.lineTo(xSym, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(xSym, y);
+      }
+
+      ctx.lineWidth = penSize;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = penColor;
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+    function startPosition(e) {
       painting = true;
       draw(e);
     }
@@ -202,105 +242,55 @@
     function endPosition() {
       painting = false;
       ctx.beginPath();
-      saveState();
     }
 
-    function draw(e) {
-      if (!painting) return;
-      e.preventDefault();
-      
-      ctx.lineWidth = penSize;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = penColor;
-
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      ctx.lineTo(x, y);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-    }
-
-    function saveState() {
-      if (historyStep < history.length - 1) {
-        history = history.slice(0, historyStep + 1);
-      }
-      history.push(canvas.toDataURL());
-      historyStep++;
-    }
-
-    function restoreCanvas() {
-      const canvasPic = new Image();
-      canvasPic.onload = function() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(canvasPic, 0, 0);
-      };
-      canvasPic.src = history[historyStep];
-    }
-
-    // Event Listeners
+    // Event Listeners for drawing
     canvas.addEventListener('mousedown', startPosition);
     canvas.addEventListener('mouseup', endPosition);
     canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseleave', endPosition);
+    canvas.addEventListener('mouseout', endPosition);
 
-    document.getElementById('color-picker').addEventListener('input', (e) => {
-      penColor = e.target.value;
-    });
-
-    document.getElementById('pen-size').addEventListener('input', (e) => {
-      penSize = e.target.value;
-    });
-
-    document.getElementById('brush-tool').addEventListener('click', () => {
-      penColor = document.getElementById('color-picker').value;
-    });
-
-    document.getElementById('eraser-tool').addEventListener('click', () => {
-      penColor = '#FFFFFF';
-    });
-
-    document.getElementById('undo-tool').addEventListener('click', () => {
-      if (historyStep > 0) {
-        historyStep--;
-        restoreCanvas();
-      }
-    });
-
-    document.getElementById('redo-tool').addEventListener('click', () => {
-      if (historyStep < history.length - 1) {
-        historyStep++;
-        restoreCanvas();
-      }
-    });
-
-    document.getElementById('save-tool').addEventListener('click', () => {
-      const link = document.createElement('a');
-      link.download = 'penda-drawing.png';
-      link.href = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
-      link.click();
-    });
-
-    document.getElementById('clear-tool').addEventListener('click', () => {
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      saveState();
-    });
-
-    // Placeholder functions for future features
+    // Toggle Neon Effect
     document.getElementById('neon-toggle').addEventListener('click', () => {
-      alert('Neon effect will be implemented in a future update!');
+      neonEnabled = !neonEnabled;
     });
 
+    // Toggle Symmetry Mode
     document.getElementById('symmetry-toggle').addEventListener('click', () => {
-      alert('Symmetry mode will be implemented in a future update!');
+      symmetryEnabled = !symmetryEnabled;
     });
 
+    // Toggle Grid Overlay
     document.getElementById('grid-toggle').addEventListener('click', () => {
-      alert('Grid overlay will be implemented in a future update!');
+      gridEnabled = !gridEnabled;
+      if (gridEnabled) {
+        drawGrid();
+      } else {
+        clearCanvas();
+      }
     });
+
+    function drawGrid() {
+      const gridSize = 20;
+      ctx.strokeStyle = '#cccccc';
+      ctx.lineWidth = 0.5;
+      for (let x = 0; x < canvas.width; x += gridSize) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+      }
+      for (let y = 0; y < canvas.height; y += gridSize) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+      }
+      ctx.stroke();
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (gridEnabled) {
+        drawGrid();
+      }
+    }
   </script>
  </body>
 </html>
